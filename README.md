@@ -18,6 +18,7 @@ The hyperfleet-sentinel application uses [hyperfleet-broker](https://github.com/
 3. **AWS Secrets Store CSI Driver** installed
 4. **AWS MQ RabbitMQ** broker instance
 5. **IAM Role** with permissions to access AWS Secrets Manager and AWS MQ
+6. **hyperfleet-system namespace** must be created before deploying this chart (managed by another chart)
 
 ## AWS Setup
 
@@ -137,7 +138,7 @@ The `BROKER_RABBITMQ_URL` environment variable is automatically populated from t
 |-----------|-------------|---------|
 | `argocd.applicationName` | Name of the ArgoCD Application | `hyperfleet-sentinel` |
 | `argocd.namespace` | Namespace for ArgoCD Application resource | `argocd` |
-| `argocd.targetNamespace` | Namespace where hyperfleet-sentinel will be deployed | `hyperfleet-sentinel` |
+| `argocd.targetNamespace` | Namespace where hyperfleet-sentinel will be deployed | `hyperfleet-system` |
 | `argocd.source.targetRevision` | hyperfleet-sentinel chart version | `v0.1.1` |
 | `secretProvider.enabled` | Enable SecretProviderClass creation | `true` |
 | `secretProvider.aws.region` | AWS region for Secrets Manager | `us-east-1` |
@@ -154,13 +155,13 @@ kubectl get application -n argocd hyperfleet-sentinel
 Check the SecretProviderClass:
 
 ```bash
-kubectl get secretproviderclass -n hyperfleet-sentinel
+kubectl get secretproviderclass -n hyperfleet-system
 ```
 
 Verify the secret was created:
 
 ```bash
-kubectl get secret -n hyperfleet-sentinel hyperfleet-sentinel-broker-credentials
+kubectl get secret -n hyperfleet-system hyperfleet-sentinel-broker-credentials
 ```
 
 ## Troubleshooting
@@ -176,12 +177,12 @@ kubectl logs -n kube-system -l app=secrets-store-csi-driver
 
 Verify the service account annotation:
 ```bash
-kubectl get sa -n hyperfleet-sentinel hyperfleet-sentinel -o yaml
+kubectl get sa -n hyperfleet-system hyperfleet-sentinel -o yaml
 ```
 
 ### Broker connection issues
 
 Check the hyperfleet-sentinel logs:
 ```bash
-kubectl logs -n hyperfleet-sentinel -l app.kubernetes.io/name=hyperfleet-sentinel
+kubectl logs -n hyperfleet-system -l app.kubernetes.io/name=hyperfleet-sentinel
 ```
