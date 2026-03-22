@@ -18,8 +18,7 @@ The hyperfleet-sentinel application uses [hyperfleet-broker](https://github.com/
 3. **AWS Secrets Store CSI Driver** installed
 4. **AWS MQ RabbitMQ** broker instance
 5. **IAM Role** with permissions to access AWS Secrets Manager and AWS MQ
-6. **hyperfleet-sentinel namespace** must exist for the ArgoCD Application resource
-7. **hyperfleet-system namespace** must be created before deploying this chart (managed by another chart)
+6. **hyperfleet-system namespace** must be created before deploying this chart (managed by another chart)
 
 ## AWS Setup
 
@@ -138,7 +137,7 @@ The `BROKER_RABBITMQ_URL` environment variable is automatically populated from t
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `argocd.applicationName` | Name of the ArgoCD Application | `hyperfleet-sentinel` |
-| `argocd.namespace` | Namespace for ArgoCD Application resource | `hyperfleet-sentinel` |
+| `argocd.namespace` | Namespace for ArgoCD Application resource | `argocd` |
 | `argocd.targetNamespace` | Namespace where hyperfleet-sentinel will be deployed | `hyperfleet-system` |
 | `argocd.source.targetRevision` | hyperfleet-sentinel chart version | `v0.1.1` |
 | `secretProvider.enabled` | Enable SecretProviderClass creation | `true` |
@@ -150,7 +149,7 @@ The `BROKER_RABBITMQ_URL` environment variable is automatically populated from t
 After installation, verify the ArgoCD Application:
 
 ```bash
-kubectl get application -n hyperfleet-sentinel hyperfleet-sentinel
+kubectl get application -n argocd hyperfleet-sentinel
 ```
 
 Check the SecretProviderClass:

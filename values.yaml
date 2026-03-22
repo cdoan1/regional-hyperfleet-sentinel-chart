@@ -4,7 +4,7 @@ argocd:
   applicationName: hyperfleet-sentinel
 
   # Namespace where the ArgoCD Application resource will be created
-  namespace: hyperfleet-sentinel
+  namespace: argocd
 
   # Target namespace where hyperfleet-sentinel will be deployed
   # Note: This namespace should be created by another chart
