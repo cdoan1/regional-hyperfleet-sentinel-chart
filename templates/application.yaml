@@ -1,34 +1,34 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: {{ .Values.argocd.applicationName }}
-  namespace: {{ .Values.argocd.namespace }}
+  name: {{ .Values.hyperfleet-sentinel.applicationName }}
+  namespace: {{ .Values.hyperfleet-sentinel.namespace }}
 spec:
-  project: {{ .Values.argocd.project }}
+  project: {{ .Values.hyperfleet-sentinel.project }}
 
   source:
-    repoURL: {{ .Values.argocd.source.repoURL }}
-    targetRevision: {{ .Values.argocd.source.targetRevision }}
-    path: {{ .Values.argocd.source.path }}
-    {{- if .Values.argocd.values }}
+    repoURL: {{ .Values.hyperfleet-sentinel.source.repoURL }}
+    targetRevision: {{ .Values.hyperfleet-sentinel.source.targetRevision }}
+    path: {{ .Values.hyperfleet-sentinel.source.path }}
+    {{- if .Values.hyperfleet-sentinel.values }}
     helm:
       valuesObject:
-        {{- toYaml .Values.argocd.values | nindent 8 }}
+        {{- toYaml .Values.hyperfleet-sentinel.values | nindent 8 }}
     {{- end }}
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: {{ .Values.argocd.targetNamespace }}
+    namespace: {{ .Values.hyperfleet-sentinel.targetNamespace }}
 
   syncPolicy:
-    {{- if .Values.argocd.syncPolicy.automated }}
+    {{- if .Values.hyperfleet-sentinel.syncPolicy.automated }}
     automated:
-      prune: {{ .Values.argocd.syncPolicy.automated.prune }}
-      selfHeal: {{ .Values.argocd.syncPolicy.automated.selfHeal }}
+      prune: {{ .Values.hyperfleet-sentinel.syncPolicy.automated.prune }}
+      selfHeal: {{ .Values.hyperfleet-sentinel.syncPolicy.automated.selfHeal }}
     {{- end }}
-    {{- if .Values.argocd.syncPolicy.syncOptions }}
+    {{- if .Values.hyperfleet-sentinel.syncPolicy.syncOptions }}
     syncOptions:
-      {{- range .Values.argocd.syncPolicy.syncOptions }}
+      {{- range .Values.hyperfleet-sentinel.syncPolicy.syncOptions }}
       - {{ . }}
       {{- end }}
     {{- end }}

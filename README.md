@@ -82,7 +82,7 @@ Attach this policy to allow secret access:
 Update the IAM role ARN in `values.yaml`:
 
 ```yaml
-argocd:
+hyperfleet-sentinel:
   values:
     serviceAccount:
       annotations:
@@ -109,7 +109,7 @@ Or customize values:
 
 ```bash
 helm install regional-hyperfleet-sentinel . \
-  --set argocd.values.serviceAccount.annotations."eks\.amazonaws\.com/role-arn"="arn:aws:iam::123456789:role/hyperfleet-role" \
+  --set hyperfleet-sentinel.values.serviceAccount.annotations."eks\.amazonaws\.com/role-arn"="arn:aws:iam::123456789:role/hyperfleet-role" \
   --set secretProvider.aws.region=us-west-2
 ```
 
@@ -120,7 +120,7 @@ helm install regional-hyperfleet-sentinel . \
 The broker configuration is passed to hyperfleet-sentinel and uses the [hyperfleet-broker](https://github.com/openshift-hyperfleet/hyperfleet-broker) library:
 
 ```yaml
-argocd:
+hyperfleet-sentinel:
   values:
     broker:
       type: rabbitmq
@@ -136,13 +136,13 @@ The `BROKER_RABBITMQ_URL` environment variable is automatically populated from t
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `argocd.applicationName` | Name of the ArgoCD Application | `hyperfleet-sentinel` |
-| `argocd.namespace` | Namespace for ArgoCD Application resource | `argocd` |
-| `argocd.targetNamespace` | Namespace where hyperfleet-sentinel will be deployed | `hyperfleet-system` |
-| `argocd.source.targetRevision` | hyperfleet-sentinel chart version | `v0.1.1` |
+| `hyperfleet-sentinel.applicationName` | Name of the ArgoCD Application | `hyperfleet-sentinel` |
+| `hyperfleet-sentinel.namespace` | Namespace for ArgoCD Application resource | `argocd` |
+| `hyperfleet-sentinel.targetNamespace` | Namespace where hyperfleet-sentinel will be deployed | `hyperfleet-system` |
+| `hyperfleet-sentinel.source.targetRevision` | hyperfleet-sentinel chart version | `v0.1.1` |
 | `secretProvider.enabled` | Enable SecretProviderClass creation | `true` |
 | `secretProvider.aws.region` | AWS region for Secrets Manager | `us-east-1` |
-| `argocd.values.serviceAccount.annotations.eks.amazonaws.com/role-arn` | IAM role ARN for Pod Identity | `""` |
+| `hyperfleet-sentinel.values.serviceAccount.annotations.eks.amazonaws.com/role-arn` | IAM role ARN for Pod Identity | `""` |
 
 ## Verification
 
