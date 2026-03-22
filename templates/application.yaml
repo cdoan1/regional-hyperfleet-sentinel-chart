@@ -1,34 +1,34 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: {{ .Values.hyperfleet-sentinel.applicationName }}
-  namespace: {{ .Values.hyperfleet-sentinel.namespace }}
+  name: {{ .Values.hyperfleet-sentinel-chart.applicationName }}
+  namespace: {{ .Values.hyperfleet-sentinel-chart.namespace }}
 spec:
-  project: {{ .Values.hyperfleet-sentinel.project }}
+  project: {{ .Values.hyperfleet-sentinel-chart.project }}
 
   source:
-    repoURL: {{ .Values.hyperfleet-sentinel.source.repoURL }}
-    targetRevision: {{ .Values.hyperfleet-sentinel.source.targetRevision }}
-    path: {{ .Values.hyperfleet-sentinel.source.path }}
-    {{- if .Values.hyperfleet-sentinel.values }}
+    repoURL: {{ .Values.hyperfleet-sentinel-chart.source.repoURL }}
+    targetRevision: {{ .Values.hyperfleet-sentinel-chart.source.targetRevision }}
+    path: {{ .Values.hyperfleet-sentinel-chart.source.path }}
+    {{- if .Values.hyperfleet-sentinel-chart.values }}
     helm:
       valuesObject:
-        {{- toYaml .Values.hyperfleet-sentinel.values | nindent 8 }}
+        {{- toYaml .Values.hyperfleet-sentinel-chart.values | nindent 8 }}
     {{- end }}
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: {{ .Values.hyperfleet-sentinel.targetNamespace }}
+    namespace: {{ .Values.hyperfleet-sentinel-chart.targetNamespace }}
 
   syncPolicy:
-    {{- if .Values.hyperfleet-sentinel.syncPolicy.automated }}
+    {{- if .Values.hyperfleet-sentinel-chart.syncPolicy.automated }}
     automated:
-      prune: {{ .Values.hyperfleet-sentinel.syncPolicy.automated.prune }}
-      selfHeal: {{ .Values.hyperfleet-sentinel.syncPolicy.automated.selfHeal }}
+      prune: {{ .Values.hyperfleet-sentinel-chart.syncPolicy.automated.prune }}
+      selfHeal: {{ .Values.hyperfleet-sentinel-chart.syncPolicy.automated.selfHeal }}
     {{- end }}
-    {{- if .Values.hyperfleet-sentinel.syncPolicy.syncOptions }}
+    {{- if .Values.hyperfleet-sentinel-chart.syncPolicy.syncOptions }}
     syncOptions:
-      {{- range .Values.hyperfleet-sentinel.syncPolicy.syncOptions }}
+      {{- range .Values.hyperfleet-sentinel-chart.syncPolicy.syncOptions }}
       - {{ . }}
       {{- end }}
     {{- end }}

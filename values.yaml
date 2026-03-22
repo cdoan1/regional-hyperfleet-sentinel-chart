@@ -1,5 +1,5 @@
 # ArgoCD Application configuration
-hyperfleet-sentinel:
+hyperfleet-sentinel-chart:
   # Name of the ArgoCD Application
   applicationName: hyperfleet-sentinel
 
