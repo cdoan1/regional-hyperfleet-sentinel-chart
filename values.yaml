@@ -1,0 +1,117 @@
+# ArgoCD Application configuration
+argocd:
+  # Name of the ArgoCD Application
+  applicationName: hyperfleet-sentinel
+
+  # Namespace where the ArgoCD Application resource will be created
+  namespace: argocd
+
+  # Target namespace where hyperfleet-sentinel will be deployed
+  targetNamespace: hyperfleet-sentinel
+
+  # ArgoCD project
+  project: default
+
+  # Source configuration
+  source:
+    # Repository URL for the hyperfleet-sentinel chart
+    repoURL: https://github.com/openshift-hyperfleet/hyperfleet-sentinel
+    # Chart path within the repository
+    path: charts
+    # Target revision/tag
+    targetRevision: v0.1.1
+
+  # Sync policy configuration
+  syncPolicy:
+    # Automated sync settings
+    automated:
+      # Automatically sync when differences are detected
+      prune: true
+      # Allow empty resources to be managed
+      selfHeal: true
+
+    # Sync options
+    syncOptions:
+      - CreateNamespace=true
+
+  # Additional values to pass to the hyperfleet-sentinel chart
+  # These will be merged into the Application spec
+  values:
+    # Broker configuration for hyperfleet-sentinel
+    # Uses hyperfleet-broker library: https://github.com/openshift-hyperfleet/hyperfleet-broker
+    broker:
+      type: rabbitmq
+      # Topic name for the broker
+      topic: "hyperfleet-sentinel"
+      rabbitmq:
+        # AMQP URL format: amqp://username:password@host:port/vhost
+        # This will be overridden by environment variable BROKER_RABBITMQ_URL
+        # which is populated from the secret created by SecretProviderClass
+        url: ""
+        exchangeType: topic
+
+    # Subscriber configuration
+    subscriber:
+      parallelism: 1
+
+    # Service account configuration for AWS Pod Identity
+    serviceAccount:
+      create: true
+      annotations:
+        # AWS IAM role for Pod Identity
+        # Replace with your actual IAM role ARN
+        eks.amazonaws.com/role-arn: ""
+      name: hyperfleet-sentinel
+
+    # Environment variables to inject broker URL from secret
+    env:
+      - name: BROKER_RABBITMQ_URL
+        valueFrom:
+          secretKeyRef:
+            name: hyperfleet-sentinel-broker-credentials
+            key: url
+
+    # Volume configuration to mount secrets from SecretProviderClass
+    volumes:
+      - name: secrets-store
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: hyperfleet-sentinel-secrets
+
+    volumeMounts:
+      - name: secrets-store
+        mountPath: /mnt/secrets-store
+        readOnly: true
+
+# SecretProviderClass configuration for AWS Secrets Manager
+secretProvider:
+  # Enable SecretProviderClass creation
+  enabled: true
+  # Name of the SecretProviderClass
+  name: hyperfleet-sentinel-secrets
+
+  # AWS configuration
+  aws:
+    # AWS region where secrets are stored
+    region: us-east-1
+    # List of secrets to retrieve from AWS Secrets Manager
+    secrets:
+      # Retrieve the broker URL from AWS Secrets Manager
+      # The secret should contain a field named 'url' with the full AMQP connection string
+      # Format: amqp://username:password@host:port/vhost
+      # Example for AWS MQ: amqps://username:password@b-xxx.mq.us-east-1.amazonaws.com:5671/
+      - objectName: hyperfleet-sentinel/broker-credentials
+        objectType: secretsmanager
+        jmesPath:
+          - path: url
+            objectAlias: url
+
+  # Secret objects to create in Kubernetes from the retrieved secrets
+  secretObjects:
+    - secretName: hyperfleet-sentinel-broker-credentials
+      type: Opaque
+      data:
+        - objectName: url
+          key: url

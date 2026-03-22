@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.argocd.applicationName }}
+  namespace: {{ .Values.argocd.namespace }}
+spec:
+  project: {{ .Values.argocd.project }}
+
+  source:
+    repoURL: {{ .Values.argocd.source.repoURL }}
+    targetRevision: {{ .Values.argocd.source.targetRevision }}
+    path: {{ .Values.argocd.source.path }}
+    {{- if .Values.argocd.values }}
+    helm:
+      values: |
+        {{- toYaml .Values.argocd.values | nindent 8 }}
+    {{- end }}
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: {{ .Values.argocd.targetNamespace }}
+
+  syncPolicy:
+    {{- if .Values.argocd.syncPolicy.automated }}
+    automated:
+      prune: {{ .Values.argocd.syncPolicy.automated.prune }}
+      selfHeal: {{ .Values.argocd.syncPolicy.automated.selfHeal }}
+    {{- end }}
+    {{- if .Values.argocd.syncPolicy.syncOptions }}
+    syncOptions:
+      {{- range .Values.argocd.syncPolicy.syncOptions }}
+      - {{ . }}
+      {{- end }}
+    {{- end }}
